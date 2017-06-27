@@ -21,7 +21,7 @@ namespace monolithic_shop_core.Services
                 var orders = ctx.Orders
                     .Include(x => x.Buyer)
                     .Include(x => x.Payment)
-                    .Include(x => x.ProductOrders.Select(po => po.Product))
+                    .Include(x => x.ProductOrders).ThenInclude(po => po.Product)
                     .ToList();
 
                 var pendingOrders = orders.Count(x => x.Status == OrderStatus.Delivering);

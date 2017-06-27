@@ -18,7 +18,7 @@ namespace monolithic_shop_core.Controllers
             {
                 var order = context.Orders
                     .Where(x => x.Id == orderId)
-                    .Include(p => p.ProductOrders.Select(po => po.Product))
+                    .Include(p => p.ProductOrders).ThenInclude(po => po.Product)
                     .FirstOrDefault();
 
                 return View(order);
