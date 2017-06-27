@@ -1,0 +1,14 @@
+﻿@model monolithic_shop_core.Data.Report
+
+@{
+    ViewData["Title"] = "Report";
+}
+
+Pending Orders - @Model.PendingOrders 
+<br/>
+Fullfiled Orders - @Model.DeliveredOrders
+<br/>
+Sold Amount - @Model.NumberSold
+<br/>
+Sold Money - @Model.MoneySold
+<br/>

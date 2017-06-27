@@ -1,0 +1,18 @@
+﻿@model monolithic_shop_core.Data.Order
+
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<ul>
+    @foreach (var productOrder in Model.ProductOrders)
+    {
+        <li>@productOrder.Product.Name - @productOrder.Product.Price - @productOrder.Count</li>
+    }
+</ul>
+
+<div>Order Id - @Model.Id</div>
+
+<form action="/pay/@Model.Id" method="get">
+    <input type="submit" value="Go To Payment" />
+</form>

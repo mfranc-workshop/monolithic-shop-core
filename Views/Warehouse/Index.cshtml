@@ -1,0 +1,18 @@
+﻿@model IEnumerable<monolithic_shop_core.Data.ProductWarehouse>
+
+@{
+    ViewData["Title"] = "Shop";
+}
+
+<ul>
+@foreach (var productW in Model)
+{
+    <li>
+        @productW.Product.Name
+        <form action="/warehouse/@productW.Id" method="post">
+            <input type="number" name="NumberAvailable" value="@productW.NumberAvailable"/>
+            <button class="btn btn-lg btn-success" type="submit">Update</button>
+        </form>
+    </li>
+}
+</ul>

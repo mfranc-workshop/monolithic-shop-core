@@ -1,0 +1,21 @@
+﻿@using monolithic_shop_core.Data
+@model IEnumerable<monolithic_shop_core.Data.Order>
+
+@{
+    ViewData["Title"] = "Orders List";
+}
+
+<ul>
+    @foreach (var order in Model)
+    {
+        <li>
+            @order.Id - @order.Payment.Price - @order.Status - @order.Payment.Type - @order.Payment.Status
+            @if(order.Status == OrderStatus.Delivering)
+            {
+                <form action="/api/order/@order.Id/delivered" method="get">
+                    <button class="btn btn-lg btn-success" type="submit">Deliver</button>
+                </form>
+            }
+        </li>
+    }
+</ul>

@@ -1,0 +1,109 @@
+﻿@model IEnumerable<monolithic_shop_core.Data.Product>
+
+@{
+    ViewData["Title"] = "Shop";
+}
+
+This is Awesome Shop! Stay while and buy!
+
+
+<script id="cart" type="text/x-handlebars-template">
+    <div class="cart">
+        {{#each cart}}
+            <li>{{this.name}} - {{this.count}} - {{this.sumPrice}} <button onClick="removeFromCart('{{@@key}}')">Remove</button></li>
+        {{/each}}
+        price - {{price}}
+    </div>
+    <button onClick="goToCheckout()">Checkout</button>
+</script>
+
+<script>
+    let cart = new Map();
+
+    function goToCheckout() {
+
+        let object = [];
+
+        for (var [key, value] of cart) {
+            object.push({
+                productId: value.id,
+                count: value.count
+            });
+        }
+
+        fetch('/order', {
+                method: 'PUT',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(object)
+            }).then(function(response) { return response.json(); })
+              .then(function(json) {
+                document.location.href = '/checkout/' + json.orderId;
+            });
+    }
+
+    function refreshCartDisplay(cart) {
+        if(!cart){
+            // houston we have a problem
+            return;
+        }
+
+        let source = document.getElementById("cart").innerText;
+        let template = Handlebars.compile(source);
+
+        let templateData = { };
+
+        let price = 0;
+
+        for (var [key, value] of cart) {
+            templateData[key] = { name: value.name, count: value.count, sumPrice: value.count * value.price };
+            price += (value.price * value.count);
+        }
+
+        let cartView = template({ cart: templateData, price });
+
+        let cartPlaceholder = document.getElementById("cart-placeholder");
+        cartPlaceholder.innerHTML = cartView;
+    }
+
+    function removeFromCart(key) {
+        let originalValue = cart.get(key); 
+        let newCount = originalValue.count - 1;
+
+        if(newCount <= 0) {
+            cart.delete(key);
+        }
+        else {
+            originalValue.count = newCount;
+            cart.set(key, originalValue);
+        }
+
+        refreshCartDisplay(cart);
+    }
+
+    function addToCart(item) {
+        if (!item) {
+            // log error that product couldnt be added to the cart
+            return;
+        }
+        let key = item.id;
+        let originalValue = cart.get(key) || { id: item.id, name: item.name, price: item.price, count: 0};
+        originalValue.count = originalValue.count + 1;
+
+        cart.set(key, originalValue);
+
+        console.log("product with name" + item.name + " added ot cart");
+
+        refreshCartDisplay(cart);
+    }
+
+</script>
+
+<ul>
+    @foreach (var product in Model)
+    {
+        <li>@product.Name - @product.Price - <button onclick="addToCart({ id: '@product.Id', name: '@product.Name', price: @product.Price })">Add</button></li>
+    }
+</ul>
+<div id="cart-placeholder"></div>
