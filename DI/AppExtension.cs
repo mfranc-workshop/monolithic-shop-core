@@ -5,7 +5,6 @@ using Quartz.Impl;
 using Quartz.Spi;
 using SimpleInjector;
 using SimpleInjector.Integration.AspNetCore;
-using MailKit.Net.Smtp;
 
 namespace monolithic_shop_core.DI
 {
@@ -17,12 +16,7 @@ namespace monolithic_shop_core.DI
 
             container.RegisterMvcControllers(app);
 
-            container.RegisterSingleton<IEmailService, EmailService>();
-            container.RegisterSingleton(() =>  {
-                var client = new SmtpClient();
-                //client.Connect("localhost", 25);
-                return client;
-            });
+            container.RegisterSingleton<IEmailService, FakeEmailService>();
             container.Register(() =>
             {
                 var sched = new StdSchedulerFactory().GetScheduler().Result;

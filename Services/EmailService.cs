@@ -1,8 +1,6 @@
 ﻿using System;
-using MailKit.Net.Smtp;
-using MailKit;
-using MimeKit;
 using monolithic_shop_core.EmailHelpers;
+using Microsoft.Extensions.Logging;
 
 namespace monolithic_shop_core.Services
 {
@@ -11,35 +9,18 @@ namespace monolithic_shop_core.Services
         void SendEmail(string email, EmailType type);
     }
 
-    public class EmailService : IEmailService
+    public class FakeEmailService : IEmailService
     {
-        private readonly SmtpClient _client;
+        private ILogger _logger;
 
-        public EmailService(SmtpClient client)
+        public FakeEmailService(ILogger<FakeEmailService> logger)
         {
-            _client = client;
+            _logger = logger;
         }
 
         public void SendEmail(string emailAddress, EmailType type)
         {
-            var mail = new MimeMessage();
-            mail.From.Add(new MailboxAddress("awesome_shop@com.pl"));
-            mail.To.Add(new MailboxAddress(emailAddress));
-
-            var emailData = Email.Templates[type];
-            mail.Subject = emailData.Item1;
-            mail.Body = new TextPart("plain") { 
-                Text = emailData.Item2
-            };
-
-            try
-            {
-                _client.Send(mail);
-            }
-            catch (Exception ex)
-            {
-                // swallowing errors!! muahahaha
-            }
+            _logger.LogInformation($"Sending email to - {emailAddress} of type - {type}");
         }
     }
 }
