@@ -21,7 +21,7 @@ namespace monolithic_shop_core.Controllers
                     .Where(x => x.Buyer.Email == email)
                     .Include(x => x.Buyer)
                     .Include(x => x.Payment)
-                    .Include(x => x.ProductOrders.Select(po => po.Product))
+                    .Include(x => x.ProductOrders).ThenInclude(po => po.Product)
                     .ToList();
 
                 return View(orders);
