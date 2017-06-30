@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using monolithic_shop_core.Services;
 using Quartz.Impl;
 using Quartz.Spi;
@@ -14,7 +16,7 @@ namespace monolithic_shop_core.DI
         {
             container.RegisterMvcControllers(app);
 
-            container.RegisterSingleton<IEmailService, FakeEmailService>();
+            container.RegisterSingleton<IEmailService, ExternalEmailService>();
             container.Register(() =>
             {
                 var sched = new StdSchedulerFactory().GetScheduler().Result;
