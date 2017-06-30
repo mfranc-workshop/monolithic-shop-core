@@ -1,6 +1,6 @@
 ﻿using System;
 using monolithic_shop_core.EmailHelpers;
-using Microsoft.Extensions.Logging;
+using NLog;
 
 namespace monolithic_shop_core.Services
 {
@@ -11,16 +11,11 @@ namespace monolithic_shop_core.Services
 
     public class FakeEmailService : IEmailService
     {
-        private ILogger _logger;
-
-        public FakeEmailService(ILogger<FakeEmailService> logger)
-        {
-            _logger = logger;
-        }
+        private ILogger _logger = LogManager.GetCurrentClassLogger();
 
         public void SendEmail(string emailAddress, EmailType type)
         {
-            _logger.LogInformation($"Sending email to - {emailAddress} of type - {type}");
+            _logger.Info($"Sending email to - {emailAddress} of type - {type}");
         }
     }
 }

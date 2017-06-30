@@ -11,12 +11,14 @@ namespace monolithic_shop_core
     {
         public static void Main(string[] args)
         {
+            var portNumber = args[0];
+
             var host = new WebHostBuilder()
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
-                .UseUrls("http://*:50000")
+                .UseUrls($"http://*:{portNumber}")
                 .Build();
 
             host.Run();

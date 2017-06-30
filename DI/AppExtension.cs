@@ -12,8 +12,6 @@ namespace monolithic_shop_core.DI
     {
         public static void InitializeContainer(this IApplicationBuilder app, Container container, IHostingEnvironment env)
         {
-            container.Options.DefaultScopedLifestyle = new AspNetRequestLifestyle();
-
             container.RegisterMvcControllers(app);
 
             container.RegisterSingleton<IEmailService, FakeEmailService>();
