@@ -45,9 +45,14 @@ namespace monolithic_shop_core.Services
 
         public async void SendEmail(string emailAddress, EmailType type)
         {
+            // this should be injected somehow on app startup
+            var envName = "EMAIL_PORT";
+            var emailServicePort = Environment.GetEnvironmentVariable(envName).Replace("tcp", "http");
+
             try
             {
-                var client = RestClient.For<IExternalEmailService>("http://localhost:5001");
+                _logger.Info($"sending email to email service - {emailServicePort}");
+                var client = RestClient.For<IExternalEmailService>(emailServicePort);
                 var result = await client.Send(new EmailMessage(emailAddress, Email.Templates[type].Item2));
                 _logger.Info($"Email request sent - {emailAddress} of type - {type} - with result {result}");
             }
