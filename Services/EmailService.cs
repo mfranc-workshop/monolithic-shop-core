@@ -3,6 +3,8 @@ using monolithic_shop_core.EmailHelpers;
 using NLog;
 using RestEase;
 using System.Threading.Tasks;
+using RawRabbit;
+using RawRabbit.vNext;
 
 namespace monolithic_shop_core.Services
 {
@@ -55,6 +57,33 @@ namespace monolithic_shop_core.Services
                 var client = RestClient.For<IExternalEmailService>(emailServicePort);
                 var result = await client.Send(new EmailMessage(emailAddress, Email.Templates[type].Item2));
                 _logger.Info($"Email request sent - {emailAddress} of type - {type} - with result {result}");
+            }
+            catch(Exception ex)
+            {
+                _logger.Error(ex, "Encountered a problem when sending Email");
+            }
+        }
+    }
+
+    public class EmailCommandService : IEmailService
+    {
+        private ILogger _logger = LogManager.GetCurrentClassLogger();
+
+        private IBusClient _client;
+
+        public EmailCommandService(IBusClient client)
+        {
+            _client = client;
+        }
+
+        public async void SendEmail(string emailAddress, EmailType type)
+        {
+            try
+            {
+                _logger.Info($"Sending email command");
+                await _client.PublishAsync(new Tuple<string, string>(emailAddress, Email.Templates[type].Item2), default(Guid), 
+                cfg => cfg.WithExchange(ex => ex.WithName("email_exchange")));
+                _logger.Info($"Email request sent - {emailAddress} of type - {type}");
             }
             catch(Exception ex)
             {

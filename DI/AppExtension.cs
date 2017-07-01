@@ -7,6 +7,9 @@ using Quartz.Impl;
 using Quartz.Spi;
 using SimpleInjector;
 using SimpleInjector.Integration.AspNetCore;
+using RawRabbit;
+using RawRabbit.Configuration;
+using RawRabbit.vNext;
 
 namespace monolithic_shop_core.DI
 {
@@ -16,7 +19,20 @@ namespace monolithic_shop_core.DI
         {
             container.RegisterMvcControllers(app);
 
-            container.RegisterSingleton<IEmailService, ExternalEmailService>();
+            container.Register<IBusClient>(() => {
+                var busConfig = new RawRabbitConfiguration
+                {
+                    Username = "guest",
+                    Password = "guest",
+                    Port = 5672,
+                    VirtualHost = "/",
+                    Hostnames = { "localhost" }
+                };
+
+                return BusClientFactory.CreateDefault(busConfig);
+            });
+
+            container.Register<IEmailService, EmailCommandService>();
             container.Register(() =>
             {
                 var sched = new StdSchedulerFactory().GetScheduler().Result;
