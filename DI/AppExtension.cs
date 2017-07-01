@@ -19,7 +19,7 @@ namespace monolithic_shop_core.DI
         {
             container.RegisterMvcControllers(app);
 
-            container.Register<IBusClient>(() => {
+            container.RegisterSingleton<IBusClient>(() => {
                 var busConfig = new RawRabbitConfiguration
                 {
                     Username = "guest",

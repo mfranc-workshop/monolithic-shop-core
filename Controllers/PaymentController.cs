@@ -6,18 +6,27 @@ using monolithic_shop_core.Data;
 using monolithic_shop_core.EmailHelpers;
 using monolithic_shop_core.Helpers;
 using monolithic_shop_core.Services;
+using RawRabbit;
+using Newtonsoft.Json;
 
 namespace monolithic_shop_core.Controllers
 {
+    public class OrderAwaitingTransfer
+    {
+        public Guid Id { get; set; }
+    }
+
     public class PaymentController : Controller
     {
         private readonly IEmailService _emailService;
         private readonly IPaymentProvider _paymentProvider;
+        private IBusClient _client;
 
-        public PaymentController(IEmailService emailService, IPaymentProvider paymentProvider)
+        public PaymentController(IEmailService emailService, IPaymentProvider paymentProvider, IBusClient client)
         {
             _emailService = emailService;
             _paymentProvider = paymentProvider;
+            _client = client;
         }
 
         [HttpGet]
@@ -59,6 +68,11 @@ namespace monolithic_shop_core.Controllers
                 {
                     _emailService.SendEmail(email, EmailType.WaitingForTransfer); 
                     order.PayByTransfer(payment);
+
+                    var jsonData = JsonConvert.SerializeObject(new OrderAwaitingTransfer { Id = order.Id });
+
+                    _client.PublishAsync(jsonData, default(Guid),
+                        cfg => cfg.WithExchange(ex => ex.WithName("order_exchange")).WithRoutingKey("order_awaiting_transfer"));
                     context.SaveChanges();
                     return View("Success");
                 }

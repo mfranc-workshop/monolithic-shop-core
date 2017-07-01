@@ -85,7 +85,7 @@ namespace monolithic_shop_core.Services
                 var jsonData = JsonConvert.SerializeObject(msg);
 
                 _logger.Info($"Sending email command");
-                await _client.PublishAsync(jsonData, default(Guid),
+                 await _client.PublishAsync(jsonData, default(Guid),
                 cfg => cfg.WithExchange(ex => ex.WithName("email_exchange")).WithRoutingKey("email_command"));
                 _logger.Info($"Email request sent - {emailAddress} of type - {type}");
             }
