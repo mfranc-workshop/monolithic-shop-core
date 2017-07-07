@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using monolithic_shop_core.Data;
+using NLog;
 
 namespace monolithic_shop_core.Services
 {
@@ -12,9 +13,12 @@ namespace monolithic_shop_core.Services
 
     public class ReportGenerator : IReportGenerator
     {
+        private ILogger _logger = LogManager.GetCurrentClassLogger();
+
         public Report GenerateReport()
         {
             var report = new Report();
+            _logger.Info("Generating report");
 
             using (var ctx = new MainDatabaseContext())
             {
@@ -40,6 +44,7 @@ namespace monolithic_shop_core.Services
                 //Magic :D
             Thread.Sleep(4000);
 
+            _logger.Info("Report generated");
             return report;
         }
     }
